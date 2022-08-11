@@ -21,6 +21,7 @@ type Garment struct {
 	Brand       *string    `json:"brand" db:"brand"`
 	ImageURL    *string    `json:"image_url" db:"image_url"`
 	AddedAt     *time.Time `json:"added_at" db:"added_at"`
+	IsOrphan 	bool		`json:"is_orphan" db:"is_orphan"`
 }
 
 func Ptr[T any](v T) *T {
@@ -28,12 +29,11 @@ func Ptr[T any](v T) *T {
 }
 
 func GetAllGarments(c *fiber.Ctx) error {
-	var shirts []Garment
-	stmt := `SELECT * FROM garments g ORDER BY g.last_worn DESC`
+	includeOrphans := c.Query("includeOrphans") != ""
+	var err error
+	var garments []Garment
 
-	err := db.DBClient.Select(&shirts, stmt)
-
-	fmt.Println(err)
+	garments, err = getGarments(c, includeOrphans)
 
 	if err != nil {
 		return c.Status(500).JSON(&fiber.Map{
@@ -47,7 +47,7 @@ func GetAllGarments(c *fiber.Ctx) error {
 	return c.Status(200).JSON(&fiber.Map{
 		"success": true,
 		"message": "",
-		"data":    shirts,
+		"data":    garments,
 	})
 }
 
@@ -74,6 +74,7 @@ func CreateGarment(c *fiber.Ctx) error {
 		Brand:       Ptr(""),
 		ImageURL:    Ptr(""),
 		AddedAt:     Ptr(time.Now()),
+		IsOrphan:    true,
 	}
 
 	garment, err := persistGarment(g)
@@ -91,6 +92,62 @@ func CreateGarment(c *fiber.Ctx) error {
 		"success": true,
 		"message": "",
 		"data":    garment,
+	})
+}
+
+func UpdateGarment(c *fiber.Ctx) error {
+	g := new(Garment)
+
+	id, err := strconv.ParseInt(c.Params("id"), 10, 64)
+	if err != nil {
+		return c.Status(500).JSON(&fiber.Map{
+			"success": false,
+			"message": "Could not read ID",
+			"error":   err,
+			"data":    nil,
+		})
+	}
+
+	g.ID = id
+	g.IsOrphan = false
+
+	if err := c.BodyParser(g); err != nil {
+		return c.Status(500).JSON(&fiber.Map{
+			"success": false,
+			"message": "Could not parse body",
+			"error":   err,
+			"data":    nil,
+		})
+	}
+
+	stmt := `UPDATE garments SET 
+			color=:color, purchase_price=:purchase_price,
+			purchased_at=:purchased_at, last_worn=:last_worn,
+			last_washed=:last_washed, times_worn=:times_worn,
+			times_washed=:times_washed, brand=:brand,
+			is_orphan=:is_orphan
+			WHERE id = :id`
+
+	rows, err := db.DBClient.NamedQuery(stmt, g)
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(500).JSON(&fiber.Map{
+			"success": false,
+			"message": "Could not update db",
+			"error":   err,
+			"data":    nil,
+		})
+	}
+
+	if rows.Next() {
+		rows.Scan(&g)
+	}
+	
+	return c.Status(200).JSON(&fiber.Map{
+		"success": true,
+		"message": "",
+		"data": g,
 	})
 }
 
@@ -128,18 +185,36 @@ func IncrementGarment(c *fiber.Ctx) error {
 	})
 }
 
+func getGarments(c *fiber.Ctx, includeOrphans bool) ([]Garment, error) {
+	var garments []Garment
+	var stmt string
+	if includeOrphans == true {
+		stmt = `SELECT * FROM garments g ORDER BY g.last_worn DESC`
+	} else {
+		stmt = `SELECT * FROM garments g WHERE g.is_orphan = false ORDER BY g.last_worn DESC`
+	}
+
+	err := db.DBClient.Select(&garments, stmt)
+
+	if err != nil {
+		return garments, err
+	}
+
+	return garments, nil
+}
+
 func persistGarment(g Garment) (Garment, error) {
 	var garment Garment
 	stmt := `INSERT INTO garments (
 			id, color, purchase_price,
 			purchased_at, last_worn, last_washed,
 			times_worn, times_washed, brand,
-			image_url, added_at)
+			image_url, added_at, is_orphan)
 			VALUES (
 			:id, :color, :purchase_price,
 			:purchased_at, :last_worn, :last_washed,
 			:times_worn, :times_washed, :brand,
-			:image_url, :added_at)
+			:image_url, :added_at, :is_orphan)
 			RETURNING *`
 
 	rows, err := db.DBClient.NamedQuery(stmt, g)

@@ -8,8 +8,6 @@
     const formatter = new Intl.DateTimeFormat('sv-SE');
     return formatter.format(date)
  }
-
- $: console.log(garment)
 </script>
 
 <div class="container">
@@ -77,7 +75,7 @@
      top: 0;
      left: 0;
      right: 0;
-     background: var(--teal);
+     background: rgb(var(--teal));
      opacity: 0%;
      transition: all .2s ease-in-out;
      z-index:2;
@@ -92,18 +90,18 @@
      width: 18rem;
      min-width: 15rem;
      height: 27rem;
-     margin: 20px 15px;
      border-radius: 5px;
      overflow: hidden;
      box-shadow: 0px 4px 20px -4px rgba(0,0,0,.35);
      z-index: 100;
+     margin: auto;
  }
 
  .garment-info {
      display:flex;
      flex-direction: column;
      color: #000;
-     background: var(--lemon);
+     background: var(--lemon-gradient);
      height: 8.5rem;
      margin-top: 2rem;
      padding: 0px 20px;

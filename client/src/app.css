@@ -18,11 +18,12 @@
    --viola: #c38d9e;
    /* --teal: #41b3a3; */
 
-   --lime: #abd599;
-   --lemon: #ffe26a;
-   --teal: #75c9b7;
-   --mint: #c7ddcc;
-   --navy: #16123f;
+   --lime: 171, 213, 153;
+   --lemon: 255, 226, 106;
+   --teal: 117, 201, 183;
+   --mint: 199, 221, 204;
+   --navy: 22, 18, 63;
+   --lemon-gradient: linear-gradient(160deg, rgba(var(--lemon), 1) 0%, rgba(var(--lemon), 1) 100%)
 
 }
 
@@ -41,7 +42,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(160deg, var(--lime) 0%, var(--teal) 100%);
+  background: linear-gradient(160deg, rgb(var(--lime)) 0%, rgb(var(--teal)) 100%);
 }
 
 h1 {
@@ -55,6 +56,7 @@ h1 {
 
 #app {
   max-width: 1280px;
+  height: 100vh;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

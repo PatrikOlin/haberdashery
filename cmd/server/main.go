@@ -22,7 +22,7 @@ func main() {
 	app.Use(cors.New())
 	setupRoutes(app)
 
-	app.Listen(":3000")
+	app.Listen(":4040")
 }
 
 func setupRoutes(app *fiber.App) {
@@ -35,5 +35,6 @@ func setupRoutes(app *fiber.App) {
 
 	v1.Get("/garments", garment.GetAllGarments)
 	v1.Post("/garments/:id", garment.CreateGarment)
+	v1.Put("/garments/:id", garment.UpdateGarment)
 	v1.Patch("/garments/:id/increment", garment.IncrementGarment)
 }
