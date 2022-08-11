@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  api:
+    image: "haberdashery-api"
+    container-name: "haberdashery-api"
+    ports:
+      - 4040:4040
+
+  ui:
+    image: "haberdashery-ui"
+    container-name: "haberdashery-ui"
+    ports:
+      - 80:80
+    links:
+      - api

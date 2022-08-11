@@ -5,7 +5,7 @@ export const isFetching = writable(false);
 
 export const getAllGarments = () => {
   isFetching.set(true);
-  return fetch('http://localhost:3000/v1/garments?includeOrphans=true').then((x) => {
+  return fetch('http://localhost:4040/v1/garments?includeOrphans=true').then((x) => {
     isFetching.set(false);
     return x.json();
   });
@@ -13,7 +13,7 @@ export const getAllGarments = () => {
 
 export const getAllOrphans = () => {
   isFetching.set(true);
-  return fetch("http://localhost:3000/v1/garments?orphans=true").then((x) => {
+  return fetch("http://localhost:4040/v1/garments?orphans=true").then((x) => {
     isFetching.set(false);
     return x.json();
   })
