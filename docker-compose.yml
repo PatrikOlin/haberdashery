@@ -5,6 +5,12 @@ services:
     image: "haberdashery-api"
     ports:
       - 4040:4040
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   ui:
     image: "haberdashery-ui"
