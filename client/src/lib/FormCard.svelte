@@ -1,17 +1,19 @@
 <script>
- import { isFetching, getAllOrphans } from '../store'
+ import { isFetching, submitGarment } from '../store'
 
  export let isHidden = true;
  export let orphans = []
  let selectedGarment = {};
 
  const handleSubmit = () => {
-     selectedGarment.purchased_at = new Date(selectedGarment.purchased_at).toISOString()
-     fetch(`http://localhost:3000/v1/garments/${selectedGarment.id}`, {
-         method: 'put',
-         body: JSON.stringify(selectedGarment),
-     })
-         .then((res) => res.json)
+     let purchaseDate = new Date(selectedGarment.purchased_at).toISOString()
+     let offset = new Date(selectedGarment.purchased_at).getTimezoneOffset()
+     let sign = offset > 0 ? '+' : '-'
+     purchaseDate.replace('Z', `${sign}0${offset}:00`)
+     selectedGarment.purchased_at = purchaseDate
+     selectedGarment.price = +selectedGarment.price
+     console.log(selectedGarment.purchased_at)
+     submitGarment(selectedGarment)
  }
 </script>
         <div class="{ isHidden ? 'formCard hidden' : 'formCard' }">

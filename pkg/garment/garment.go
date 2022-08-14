@@ -108,9 +108,6 @@ func UpdateGarment(c *fiber.Ctx) error {
 		})
 	}
 
-	g.ID = id
-	g.IsOrphan = false
-
 	if err := c.BodyParser(g); err != nil {
 		return c.Status(500).JSON(&fiber.Map{
 			"success": false,
@@ -119,6 +116,9 @@ func UpdateGarment(c *fiber.Ctx) error {
 			"data":    nil,
 		})
 	}
+
+	g.ID = id
+	g.IsOrphan = false
 
 	stmt := `UPDATE garments SET 
 			color=:color, purchase_price=:purchase_price,
