@@ -4,7 +4,7 @@ export const garments = writable([]);
 export const isFetching = writable(false);
 
 // const url = 'http://haberdashery.home.lan:4040/v1'
-const url = 'http://localhost:4040/v1'
+const url = 'http://192.168.1.102:4040/v1'
 
 export const getAllGarments = () => {
   isFetching.set(true);
