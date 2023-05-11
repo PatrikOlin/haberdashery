@@ -19,7 +19,11 @@ func init() {
 func main() {
 
 	app := fiber.New()
-	app.Use(cors.New())
+	corsConfig := cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}
+	app.Use(cors.New(corsConfig))
 	setupRoutes(app)
 
 	app.Listen(":4040")
